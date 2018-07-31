@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Raw Tweets</title>
+</head>
+<body>
+
+<a href="/">BACK</a>
+<br/>
+<div class="table-responsive">
+    <table class="table" id="product-table">
+        <thead>
+        <tr>
+            <th>Tweet ID</th>
+            <th>Query ID</th>
+            <th>Tweet Text</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="tweet :${savedTweets}">
+            <td th:text="${tweet._id}" th:value="${tweet._id}"></td>
+            <td th:text="${tweet.queryId}" th:value="${tweet.queryId}"></td>
+            <td th:text="${tweet.text}" th:value="${tweet.text}"></td>
+
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+</body>
+</html>

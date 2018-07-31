@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Searching...</title>
+</head>
+<body>
+<a href="/">BACK</a>
+
+<br/>
+<h3>Search for Something!</h3>
+<form action="#" th:action="@{/search}" th:object="${query}" method="post">
+
+
+
+<p>Simple Text Field: <input type="text" th:field="*{text}" /></p>
+
+
+    <p><input type="submit" value="Submit" /></p>
+
+</form>
+</body>
+</html>
