@@ -1,39 +1,47 @@
 package search.api.query;
 
 
-import com.google.gson.Gson;
-import com.mongodb.BasicDBObject;
-import com.mongodb.MongoClient;
-import com.mongodb.client.MongoCollection;
-import com.mongodb.client.MongoCursor;
-import com.mongodb.client.MongoDatabase;
-import com.mongodb.client.model.Indexes;
+import java.util.UUID;
+
+import javax.inject.Inject;
+
 import org.bson.Document;
-import org.bson.conversions.Bson;
-import org.springframework.social.connect.ConnectionRepository;
-import org.springframework.social.twitter.api.Twitter;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 
-import java.util.UUID;
+import com.mongodb.MongoClient;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.model.Indexes;
+
+import amcmurray.bw.twitterdomainobjects.Query;
+import amcmurray.bw.twitterdomainobjects.SavedTweet;
 
 @Controller
 @RequestMapping("/")
 public class QueryController {
 
     private MongoClient client = new MongoClient("localhost", 27017);
-    private MongoDatabase database = client.getDatabase("test2");
+    private MongoDatabase database = client.getDatabase("test");
     private MongoCollection<Document> collection = database.getCollection("savedTweets");
-    private MongoCollection<Document> queryCollection = database.getCollection("queryCollection");
 
+    private QueryService queryService;
+
+    @Inject
+    public QueryController(QueryService queryService) {
+        this.queryService = queryService;
+    }
 
     //home page
     @RequestMapping("/")
     public String homePage(Model model) {
 
-        return "/home";
-
+        return "home";
     }
 
     //viewing all of the tweets
@@ -41,7 +49,6 @@ public class QueryController {
     public void viewTweets(Model model) {
 
         model.addAttribute("savedTweets", collection.find());
-
     }
 
     //page for searching
@@ -52,7 +59,6 @@ public class QueryController {
 
         model.addAttribute("query", query);
 
-
         return "search";
     }
 
@@ -62,7 +68,7 @@ public class QueryController {
 
         query.setId(UUID.randomUUID().toString());
 
-        saveToDB(query);
+        queryService.saveQueryToDB(query);
 
         return "redirect:/query/" + query.getId();
     }
@@ -72,43 +78,17 @@ public class QueryController {
     @RequestMapping("/query/{id}")
     public String viewQueryTweets(@PathVariable("id") String id, Model model) {
 
-
-        Boolean caseSensitive = false, diacriticSensitive = false;
-        MongoCursor<Document> cursor = null;
-
-
-
-        //find query from database
-        String queryText = "";
-
-        BasicDBObject findQueryText = new BasicDBObject();
-        findQueryText.put("id", id);
-        MongoCursor<Document> queryCursor = queryCollection.find(findQueryText).iterator();
-
-        if (queryCursor.hasNext()) {
-            queryText = queryCursor.next().get("text").toString();
-        }
-
-        queryCursor.close();
+        //find query by ID
+        Query query = queryService.findQueryText(id);
 
         //reset indexes for searching
         collection.dropIndexes();
         collection.createIndex(Indexes.text("text"));
 
-        //find mentions of that query
-        cursor = collection.find(
-                new Document("$text",
-                        new Document("$search", queryText)
-                                .append("$caseSensitive", new Boolean(caseSensitive))
-                                .append("$diacriticSensitive", new Boolean(diacriticSensitive)))).iterator();
-
-        //update raw mentions with new query id
-        while (cursor.hasNext()) {
-            Bson newValue = new Document("queryId", id);
-            Bson updateOperationDocument = new Document("$set", newValue);
-            collection.updateOne(cursor.next(), updateOperationDocument);
+        //for each tweet, find one with the query text & update the query id
+        for (SavedTweet tweet : queryService.findAllQueriedTweets(query.getText())) {
+            queryService.updateQueryIdOfTweet(tweet, query);
         }
-        cursor.close();
 
         //add updated collection to model
         model.addAttribute("queriedTweets", collection.find(new Document("queryId", id)));
@@ -116,17 +96,4 @@ public class QueryController {
         return "query";
     }
 
-
-    private void saveToDB(Query query) {
-
-        Gson gson = new Gson();
-
-        Document document = Document.parse(gson.toJson(query));
-        queryCollection.insertOne(document);
-
-    }
-
-
 }
-
-

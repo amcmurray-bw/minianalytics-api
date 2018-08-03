@@ -31,11 +31,11 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-mongodb</artifactId>
         </dependency>
-
+        
         <dependency>
-            <groupId>com.google.code.gson</groupId>
-            <artifactId>gson</artifactId>
-            <version>2.2.2</version>
+            <groupId>amcmurray.bw</groupId>
+            <artifactId>twitter-domain-objects</artifactId>
+            <version>0.1.0</version>
         </dependency>
 
     </dependencies>
