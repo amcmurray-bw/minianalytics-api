@@ -1,11 +1,10 @@
-package search.api.query;
+package amcmurray.bw;
 
 
 import java.util.UUID;
 
-import javax.inject.Inject;
-
 import org.bson.Document;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -32,31 +31,30 @@ public class QueryController {
 
     private QueryService queryService;
 
-    @Inject
+    @Autowired
     public QueryController(QueryService queryService) {
         this.queryService = queryService;
     }
 
     //home page
-    @RequestMapping("/")
+    @GetMapping("/")
     public String homePage(Model model) {
 
         return "home";
     }
 
     //viewing all of the tweets
-    @RequestMapping("/all")
+    @GetMapping("/all")
     public void viewTweets(Model model) {
 
         model.addAttribute("savedTweets", collection.find());
     }
 
-    //page for searching
+    //page for searching on submit
     @GetMapping("/search")
     public String submitSearch(Model model) {
 
         Query query = new Query();
-
         model.addAttribute("query", query);
 
         return "search";
@@ -67,7 +65,6 @@ public class QueryController {
     public String getSearch(@ModelAttribute Query query) {
 
         query.setId(UUID.randomUUID().toString());
-
         queryService.saveQueryToDB(query);
 
         return "redirect:/query/" + query.getId();
@@ -75,11 +72,11 @@ public class QueryController {
 
 
     //page for queries, linked to unique ID
-    @RequestMapping("/query/{id}")
+    @GetMapping("/query/{id}")
     public String viewQueryTweets(@PathVariable("id") String id, Model model) {
 
         //find query by ID
-        Query query = queryService.findQueryText(id);
+        Query query = queryService.findQueryById(id);
 
         //reset indexes for searching
         collection.dropIndexes();
@@ -95,5 +92,4 @@ public class QueryController {
 
         return "query";
     }
-
 }

@@ -1,4 +1,4 @@
-package search.api.query;
+package amcmurray.bw.repository;
 
 import org.springframework.data.mongodb.repository.MongoRepository;
 

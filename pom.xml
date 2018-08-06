@@ -3,8 +3,8 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>org.springframework</groupId>
-    <artifactId>gs-accessing-twitter</artifactId>
+    <groupId>amcmurray.bw</groupId>
+    <artifactId>twitter-api</artifactId>
     <version>0.1.0</version>
 
     <parent>
@@ -31,7 +31,7 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-mongodb</artifactId>
         </dependency>
-        
+
         <dependency>
             <groupId>amcmurray.bw</groupId>
             <artifactId>twitter-domain-objects</artifactId>

@@ -1,4 +1,4 @@
-package search.api.query;
+package amcmurray.bw.repository;
 
 import java.util.List;
 

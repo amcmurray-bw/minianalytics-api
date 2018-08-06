@@ -1,10 +1,12 @@
-package search.api.query;
+package amcmurray.bw;
 
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import amcmurray.bw.repository.QueryRepository;
+import amcmurray.bw.repository.TweetRepository;
 import amcmurray.bw.twitterdomainobjects.Query;
 import amcmurray.bw.twitterdomainobjects.SavedTweet;
 
@@ -26,7 +28,7 @@ public class QueryService {
         queryRepository.insert(query);
     }
 
-    public Query findQueryText(String id) {
+    public Query findQueryById(String id) {
         return queryRepository.findById(id);
     }
 
