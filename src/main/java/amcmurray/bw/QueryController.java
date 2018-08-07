@@ -1,8 +1,6 @@
 package amcmurray.bw;
 
 
-import java.util.UUID;
-
 import org.bson.Document;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -43,36 +41,45 @@ public class QueryController {
         return "home";
     }
 
-    //viewing all of the tweets
+    //page for viewing all of the tweets
     @GetMapping("/all")
     public void viewTweets(Model model) {
 
         model.addAttribute("savedTweets", collection.find());
     }
 
-    //page for searching on submit
-    @GetMapping("/search")
-    public String submitSearch(Model model) {
+    //page for adding a new query
+    @GetMapping("/newQuery")
+    public String newQuery(Model model) {
 
         Query query = new Query();
         model.addAttribute("query", query);
 
-        return "search";
+        return "newQuery";
     }
 
-    //on return, set query ID and save to a query DB
-    @PostMapping("/search")
-    public String getSearch(@ModelAttribute Query query) {
+    //page choosing an existing query
+    @GetMapping("/existingQuery")
+    public String existingQuery(Model model) {
 
-        query.setId(UUID.randomUUID().toString());
-        queryService.saveQueryToDB(query);
+        model.addAttribute("allQueries", database.getCollection("savedQueries").find());
 
-        return "redirect:/query/" + query.getId();
+        return "existingQuery";
     }
 
 
-    //page for queries, linked to unique ID
-    @GetMapping("/query/{id}")
+    //page to process a query
+    @PostMapping("/processQuery")
+    public String getSearch(@ModelAttribute("savedQueries") Query query) {
+
+        queryService.searchForQueryInDB(query);
+
+        return "redirect:/mentions/" + query.getId();
+    }
+
+
+    //page for mentions, linked to unique ID
+    @GetMapping("/mentions/{id}")
     public String viewQueryTweets(@PathVariable("id") String id, Model model) {
 
         //find query by ID
@@ -90,6 +97,6 @@ public class QueryController {
         //add updated collection to model
         model.addAttribute("queriedTweets", collection.find(new Document("queryId", id)));
 
-        return "query";
+        return "mentions";
     }
 }

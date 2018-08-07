@@ -8,11 +8,11 @@
 
 <br/>
 <h3>Search for Something!</h3>
-<form action="#" th:action="@{/search}" th:object="${query}" method="post">
+<form action="#" th:action="@{/processQuery}" th:object="${query}" method="post">
 
 
 
-<p>Simple Text Field: <input type="text" th:field="*{text}" /></p>
+<p>Enter your query here: <input type="text" th:field="*{text}" /></p>
 
 
     <p><input type="submit" value="Submit" /></p>
