@@ -17,6 +17,7 @@ import amcmurray.bw.twitterdomainobjects.Query;
 @RestController
 public class QueryController {
 
+
     private QueryService queryService;
 
     @Autowired
