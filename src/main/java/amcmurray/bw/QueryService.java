@@ -1,7 +1,6 @@
 package amcmurray.bw;
 
 import java.util.List;
-import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,19 +17,41 @@ public class QueryService {
     private QueryRepository queryRepository;
     private TweetRepository tweetRepository;
 
+
     @Autowired
     public QueryService(QueryRepository queryRepository, TweetRepository tweetRepository) {
         this.queryRepository = queryRepository;
         this.tweetRepository = tweetRepository;
     }
 
-    public void saveQueryToDB(Query query) { queryRepository.insert(query); }
+    //method to create a query
+    public Query createQuery(QueryRequestDTO request) {
 
-    public Query findQueryById(String id) {
+        int currentId = 0;
+
+        //if queries exist, get the last one, get the Id and increment
+        if (queryRepository.findAll().size() > 0) {
+            currentId = queryRepository.findAll().get(queryRepository.findAll().size() - 1).getId() + 1;
+        }
+        Query query = new Query(currentId, request.getSearch());
+        return queryRepository.save(query);
+    }
+
+    public void saveQueryToDB(Query query) {
+        queryRepository.insert(query);
+    }
+
+    public Query findQueryById(int id) {
         return queryRepository.findById(id);
     }
 
-    public List<SavedTweet> findAllQueriedTweets(String queryText) { return tweetRepository.findAllByTextContaining(queryText); }
+    public List<SavedTweet> getAllMentions(int id) {
+        return tweetRepository.findAllByQueryId(id);
+    }
+
+    public List<SavedTweet> findAllQueriedTweets(String queryText) {
+        return tweetRepository.findAllByTextContaining(queryText);
+    }
 
     public List<Query> getListAllQueries() {
         return queryRepository.findAll();
@@ -43,21 +64,5 @@ public class QueryService {
                 query.getId());
         tweetRepository.save(updatedTweet);
     }
-
-    public Query searchForQueryInDB(Query query) {
-        Query foundQuery = queryRepository.findByText(query.getText());
-
-        //if query does not exist, give an Id and save
-        //else set the query Id to the existing Id
-        if (foundQuery == null) {
-            query.setId(UUID.randomUUID().toString());
-            saveQueryToDB(query);
-        } else {
-
-            query.setId(foundQuery.getId());
-        }
-        return query;
-    }
-
 
 }

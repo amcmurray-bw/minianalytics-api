@@ -9,5 +9,6 @@ import amcmurray.bw.twitterdomainobjects.SavedTweet;
 public interface TweetRepository extends MongoRepository<SavedTweet, String> {
 
     List<SavedTweet> findAllByTextContaining(String queryText);
+    List<SavedTweet> findAllByQueryId(int queryId);
 
 }

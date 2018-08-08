@@ -1,15 +1,15 @@
 package amcmurray.bw;
 
 
+import java.util.List;
+
 import org.bson.Document;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.mongodb.MongoClient;
 import com.mongodb.client.MongoCollection;
@@ -19,8 +19,7 @@ import com.mongodb.client.model.Indexes;
 import amcmurray.bw.twitterdomainobjects.Query;
 import amcmurray.bw.twitterdomainobjects.SavedTweet;
 
-@Controller
-@RequestMapping("/")
+@RestController
 public class QueryController {
 
     private MongoClient client = new MongoClient("localhost", 27017);
@@ -29,58 +28,22 @@ public class QueryController {
 
     private QueryService queryService;
 
+
     @Autowired
     public QueryController(QueryService queryService) {
         this.queryService = queryService;
     }
 
-    //home page
-    @GetMapping("/")
-    public String homePage(Model model) {
-
-        return "home";
-    }
-
-    //page for viewing all of the tweets
-    @GetMapping("/all")
-    public void viewTweets(Model model) {
-
-        model.addAttribute("savedTweets", collection.find());
-    }
-
-    //page for adding a new query
-    @GetMapping("/newQuery")
-    public String newQuery(Model model) {
-
-        Query query = new Query();
-        model.addAttribute("query", query);
-
-        return "newQuery";
-    }
-
-    //page choosing an existing query
-    @GetMapping("/existingQuery")
-    public String existingQuery(Model model) {
-
-        model.addAttribute("allQueries", database.getCollection("savedQueries").find());
-
-        return "existingQuery";
+    //POST to create query
+    @PostMapping("/query")
+    public Query addQuery(@RequestBody QueryRequestDTO request) {
+        return queryService.createQuery(request);
     }
 
 
-    //page to process a query
-    @PostMapping("/processQuery")
-    public String getSearch(@ModelAttribute("savedQueries") Query query) {
-
-        queryService.searchForQueryInDB(query);
-
-        return "redirect:/mentions/" + query.getId();
-    }
-
-
-    //page for mentions, linked to unique ID
-    @GetMapping("/mentions/{id}")
-    public String viewQueryTweets(@PathVariable("id") String id, Model model) {
+    //GET mentions, linked to unique ID of query
+    @GetMapping("/queries/{id}")
+    public List<SavedTweet> viewMentionsOfQuery(@PathVariable("id") int id) {
 
         //find query by ID
         Query query = queryService.findQueryById(id);
@@ -94,9 +57,12 @@ public class QueryController {
             queryService.updateQueryIdOfTweet(tweet, query);
         }
 
-        //add updated collection to model
-        model.addAttribute("queriedTweets", collection.find(new Document("queryId", id)));
+        return queryService.getAllMentions(query.getId());
+    }
 
-        return "mentions";
+    //GET for mentions,lists all queries
+    @GetMapping("/queries")
+    public List<Query> viewQueries() {
+        return queryService.getListAllQueries();
     }
 }
