@@ -1,30 +1,30 @@
-package amcmurray.bw;
+package amcmurray.bw.services;
 
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import amcmurray.bw.repository.QueryRepository;
-import amcmurray.bw.repository.TweetRepository;
+import amcmurray.bw.QueryRequestDTO;
+import amcmurray.bw.repositories.MentionRepository;
+import amcmurray.bw.repositories.QueryRepository;
+import amcmurray.bw.twitterdomainobjects.Mention;
 import amcmurray.bw.twitterdomainobjects.Query;
-import amcmurray.bw.twitterdomainobjects.SavedTweet;
 
 
 @Service
 public class QueryService {
 
     private QueryRepository queryRepository;
-    private TweetRepository tweetRepository;
+    private MentionRepository mentionRepository;
 
 
     @Autowired
-    public QueryService(QueryRepository queryRepository, TweetRepository tweetRepository) {
+    public QueryService(QueryRepository queryRepository, MentionRepository mentionRepository) {
         this.queryRepository = queryRepository;
-        this.tweetRepository = tweetRepository;
+        this.mentionRepository = mentionRepository;
     }
 
-    //method to create a query
     public Query createQuery(QueryRequestDTO request) {
 
         int currentId = 0;
@@ -37,32 +37,31 @@ public class QueryService {
         return queryRepository.save(query);
     }
 
+    //save the query
     public void saveQueryToDB(Query query) {
-        queryRepository.insert(query);
+        queryRepository.save(query);
     }
 
+    //find the query
     public Query findQueryById(int id) {
         return queryRepository.findById(id);
-    }
-
-    public List<SavedTweet> getAllMentions(int id) {
-        return tweetRepository.findAllByQueryId(id);
-    }
-
-    public List<SavedTweet> findAllQueriedTweets(String queryText) {
-        return tweetRepository.findAllByTextContaining(queryText);
     }
 
     public List<Query> getListAllQueries() {
         return queryRepository.findAll();
     }
 
-    public void updateQueryIdOfTweet(SavedTweet existingTweet, Query query) {
-        SavedTweet updatedTweet = new SavedTweet(
-                existingTweet.getId(),
-                existingTweet.getText(),
-                query.getId());
-        tweetRepository.save(updatedTweet);
+    public void updateQueryIdOfMention(Mention existingMention, Query query) {
+
+        Mention updatedMention = new Mention(
+                existingMention.getId(),
+                query.getId(),
+                existingMention.getMentionType(),
+                existingMention.getText(),
+                existingMention.getLanguageCode(),
+                existingMention.getFavouriteCount());
+
+        mentionRepository.save(updatedMention);
     }
 
 }
