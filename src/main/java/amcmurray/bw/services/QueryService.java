@@ -27,12 +27,16 @@ public class QueryService {
 
     public Query createQuery(QueryRequestDTO request) {
 
-        int currentId = 0;
+        int currentId;
+        Query lastQuery = queryRepository.findFirstByOrderByIdDesc();
 
-        //if queries exist, get the last one, get the Id and increment
-        if (queryRepository.findAll().size() > 0) {
-            currentId = queryRepository.findAll().get(queryRepository.findAll().size() - 1).getId() + 1;
+        //if there are no queries set the key to 0
+        if (lastQuery == null) {
+            currentId = 0;
+        } else {
+            currentId = lastQuery.getId() + 1;
         }
+
         Query query = new Query(currentId, request.getSearch());
         return queryRepository.save(query);
     }

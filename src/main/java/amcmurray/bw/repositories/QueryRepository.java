@@ -7,4 +7,5 @@ public interface QueryRepository extends MongoRepository<Query, String> {
 
     Query findById(int id);
     Query findByText(String text);
+    Query findFirstByOrderByIdDesc();
 }
