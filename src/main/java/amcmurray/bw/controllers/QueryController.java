@@ -34,14 +34,12 @@ public class QueryController {
     //view single query
     @GetMapping("/queries/{id}")
     public Query viewQuery(@PathVariable("id") int id) {
-        //find query by ID
         return queryService.findQueryById(id);
     }
 
     //view all queries
     @GetMapping("/queries")
     public List<Query> viewQueries() {
-        //get list of all queries
         return queryService.getListAllQueries();
     }
 }
