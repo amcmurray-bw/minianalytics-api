@@ -24,7 +24,9 @@ public class MentionsController {
         this.mentionService = mentionService;
     }
 
-    //get mentions of a query
+    /*
+    this method will be changed so that the update of queryId takes place in the crawler
+     */
     @GetMapping("/mentions/{id}")
     public List<Mention> viewMentionsOfQuery(@PathVariable("id") int id) {
 

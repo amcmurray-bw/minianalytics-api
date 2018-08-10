@@ -26,19 +26,15 @@ public class QueryService {
     }
 
     public Query createQuery(QueryRequestDTO request) {
+        Query query = new Query(getNewQueryId(), request.getSearch());
+        return queryRepository.save(query);
+    }
 
-        int currentId;
+    private int getNewQueryId() {
         Query lastQuery = queryRepository.findFirstByOrderByIdDesc();
 
-        //if there are no queries set the key to 0
-        if (lastQuery == null) {
-            currentId = 0;
-        } else {
-            currentId = lastQuery.getId() + 1;
-        }
-
-        Query query = new Query(currentId, request.getSearch());
-        return queryRepository.save(query);
+        //if there are no queries set the Id to 0, else get last Id and +1
+       return lastQuery == null ? 0 : lastQuery.getId() +1;
     }
 
     //save the query
