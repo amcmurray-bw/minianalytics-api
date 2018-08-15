@@ -24,19 +24,25 @@ public class QueryController {
         this.queryService = queryService;
     }
 
-    //create a query
+    /**
+     * Create a new query.
+     */
     @PostMapping("/query")
     public Query addQuery(@RequestBody QueryRequestDTO request) {
         return queryService.createQuery(request);
     }
 
-    //view single query
+    /**
+     * View a single query.
+     */
     @GetMapping("/queries/{id}")
     public Query viewQuery(@PathVariable("id") int id) {
         return queryService.findQueryById(id);
     }
 
-    //view all queries
+    /**
+     * View all queries.
+     */
     @GetMapping("/queries")
     public List<Query> viewQueries() {
         return queryService.getListAllQueries();

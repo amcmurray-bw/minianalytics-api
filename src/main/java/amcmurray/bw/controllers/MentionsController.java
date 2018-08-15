@@ -23,14 +23,19 @@ public class MentionsController {
         this.mentionPresenter = mentionPresenter;
     }
 
-    //view mentions of single query
-    @GetMapping("/mentions/{id}")
-    public List<MentionDTO> viewMentionsOfQuery(@PathVariable("id") int id) {
+    /**
+     * view mentions of single query
+     */
+    @GetMapping("/mentions/{queryId}")
+    public List<MentionDTO> viewMentionsOfQuery(@PathVariable("queryId") int queryId) {
         return mentionPresenter.toDTOs(
-                mentionService.findAllMentionsOfQuery(id));
+                mentionService.findAllMentionsOfQuery(queryId));
     }
 
-    //view all mentions
+    /**
+     * view all mentions, not relating to any query
+     * (possibility to be removed in future)
+     */
     @GetMapping("/mentions")
     public List<MentionDTO> viewAllMentions() {
         return mentionPresenter.toDTOs(

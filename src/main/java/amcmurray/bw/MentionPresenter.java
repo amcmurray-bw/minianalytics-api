@@ -30,13 +30,18 @@ public class MentionPresenter {
         return mentionDTO;
     }
 
+    /**
+     * Converts date to a ZonedDateTime, formats to string
+     */
     private String convertDate(Date date) {
 
         //convert date to zoned date time, and then format to string
         return ZonedDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault()).format(dateFormat);
     }
 
-    //takes list of mentions, converts them to MentionDTO and returns
+    /**
+     * Takes list of mentions, converts them to MentionDTO.
+     */
     public List<MentionDTO> toDTOs(List<Mention> allMentions) {
         return allMentions
                 .stream()
