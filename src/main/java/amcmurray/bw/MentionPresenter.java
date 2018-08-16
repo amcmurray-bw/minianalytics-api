@@ -16,7 +16,7 @@ import amcmurray.bw.twitterdomainobjects.MentionDTO;
 public class MentionPresenter {
 
     private static final DateTimeFormatter dateFormat
-            = DateTimeFormatter.ISO_ZONED_DATE_TIME;
+            = DateTimeFormatter.ofPattern("dd:MM:YYYY HH:mm:ss z Z");
 
     private MentionDTO toDTO(Mention mention) {
         String date = convertDate(mention.getCreatedAt());
@@ -25,7 +25,8 @@ public class MentionPresenter {
                 mention.getQueryId(),
                 mention.getMentionType(),
                 mention.getText(), date,
-                mention.getLanguageCode(), mention.getFavouriteCount());
+                mention.getLanguageCode(),
+                mention.getFavouriteCount());
 
         return mentionDTO;
     }
@@ -36,7 +37,9 @@ public class MentionPresenter {
     private String convertDate(Date date) {
 
         //convert date to zoned date time, and then format to string
-        return ZonedDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault()).format(dateFormat);
+        return ZonedDateTime.ofInstant(
+                date.toInstant(), ZoneId.of("UTC"))
+                .format(dateFormat);
     }
 
     /**
