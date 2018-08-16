@@ -18,11 +18,11 @@ public class MentionService {
         this.mentionRepository = mentionRepository;
     }
 
-    public List<Mention> findAllQueriedTweets(String queryText) {
-        return mentionRepository.findAllByTextContaining(queryText);
+    public List<Mention> findAllMentionsOfQuery(int queryId) {
+        return mentionRepository.findAllByQueryId(queryId);
     }
 
-    public List<Mention> getAllMentions(int id) {
-        return mentionRepository.findAllByQueryId(id);
+    public List<Mention> getAllMentions() {
+        return mentionRepository.findAll();
     }
 }

@@ -6,8 +6,7 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 
 import amcmurray.bw.twitterdomainobjects.Mention;
 
-public interface MentionRepository extends MongoRepository<Mention, String> {
+public interface MentionRepository extends MongoRepository<Mention, Integer> {
 
-    List<Mention> findAllByTextContaining(String queryText);
     List<Mention> findAllByQueryId(int queryId);
 }
